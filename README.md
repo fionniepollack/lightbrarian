@@ -3,7 +3,10 @@ A command line application that allows you to use the Google Books API to search
 
 # Installation
 ```
-pip3 install upgrade --user git+https://github.com/fionniepollack/lightbrarian@main
+pip3 install --upgrade --user git+https://github.com/fionniepollack/lightbrarian@main
+
+# Confirm installation
+lightbrarian --help
 ```
 
 # Developer Installation

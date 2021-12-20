@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(name='lightbrarian',
       version='0.1.0',
-      description='Python Distribution Utilities',
+      description='A command line application that allows you to use the Google Books API to search for books and construct a reading list.',
       author='Fionnie Pollack',
       author_email='fionniepollack@gmail.com',
       url='https://github.com/fionniepollack/lightbrarian',
