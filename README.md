@@ -3,10 +3,10 @@ A command line application that allows you to use the Google Books API to search
 
 # Installation
 ```
-pip3 install --upgrade --user git+https://github.com/fionniepollack/lightbrarian@main
+$ pip3 install --upgrade --user git+https://github.com/fionniepollack/lightbrarian@main
 
 # Confirm installation
-lightbrarian --help
+$ lightbrarian --help
 ```
 
 A Google API key is required to use `lightbrarian`. See [here](https://cloud.google.com/docs/authentication/api-keys) for instructions on how to generate the API key.
@@ -18,19 +18,21 @@ $ export GOOGLE_API_TOKEN=<INSERT TOKEN HERE>
 
 # Developer Installation
 ```
-git clone https://github.com/fionniepollack/lightbrarian
+$ git clone https://github.com/fionniepollack/lightbrarian
 
-python3 -m venv .venv
+$ cd lightbrarian
 
-source .venv/bin/activate
+$ python3 -m venv .venv
 
-pip3 install --editable .
+$ source .venv/bin/activate
+
+$ pip3 install --editable .
 ```
 
 # Usage
 The `lightbrarian` CLI utility supports two sub-commands:
-- `lightbrarian search...`
-- `lightbrarian list`
+- `lightbrarian search [-h] [--book-title BOOK_TITLE] [--book-author BOOK_AUTHOR] [--book-publisher BOOK_PUBLISHER] [--max-results MAX_RESULTS]`
+- `lightbrarian list [-h]`
 
 Run `lightbrarian --help` or `lightbrarian <subcommand> --help` for details on using each sub-command.
 
@@ -107,7 +109,7 @@ Enter Book ID (1-2) to save to reading list or 0 to skip: 2
 The `list` sub-command prints the user's reading list.
 
 ```
-lightbrarian list
+$ lightbrarian list
 
 Book ID: [1]
 Title: A Cat on the Cutting Edge
