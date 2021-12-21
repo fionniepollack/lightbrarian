@@ -4,9 +4,14 @@ import os
 import sys
 from pathlib import Path
 
+# https://developers.google.com/books/docs/v1/libraries
+# Using the Google API client to work with the Books API.
 from googleapiclient.discovery import build
 
 def print_books(books):
+    '''
+    Print a list of books.
+    '''
     for i, book in enumerate(books):
         print(f"Book ID: [{i + 1}]")
         print(f"Title: {book['volumeInfo'].get('title', 'Unknown title')}")
@@ -15,6 +20,9 @@ def print_books(books):
         print('---')
 
 def search_books(command, book_title, book_author, book_publisher, max_results, google_api_token, lightbrarian_reading_list_path):
+    '''
+    Use the Google Books API to search for books (aka volumes).
+    '''
     query_elements = [
         {
             "search_field": "intitle",
@@ -32,16 +40,22 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
 
     query_string_list = []
 
+    # Construct a query string ('q') to be used when running the query.
+    # https://developers.google.com/books/docs/v1/using#PerformingSearch
     for query_element in query_elements:
         if query_element['search_value'] is not None:
             query_string_list.append(f"{query_element['search_field']}:{query_element['search_value']}") 
 
     query_string = "+".join(query_string_list)
 
+    # The build() function allows us to generate a 'service' which can then be used to invoke the Google Books API.
+    # https://googleapis.github.io/google-api-python-client/docs/epy/googleapiclient.discovery-module.html#build
     with build('books', 'v1', developerKey=google_api_token) as service:
         response = service.volumes().list(q=query_string, maxResults=max_results).execute()
 
-    total_search_results = len(response['items'])
+    books = response['items']
+
+    total_search_results = len(books)
 
     print("")
     print("---SEARCH RESULTS---")
@@ -49,13 +63,14 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
     print(f"Total search results: {total_search_results}")
     print("")
 
-    books = response['items']
     print_books(books)
 
+    # Prompt user to enter a book ID to save to the reading list.
     selected_book_id = -1
     while not int(selected_book_id) in range(0,(total_search_results + 1)):
         selected_book_id = int(input(f"Enter Book ID (1-{total_search_results}) to save to reading list or 0 to skip: ") or 0)
 
+    # If a book is selected to be saved, then append the book to the existing reading list file.
     if selected_book_id != 0:
         with open(lightbrarian_reading_list_path, 'r+') as lightbrarian_reading_list_file:
             existing_data = json.load(lightbrarian_reading_list_file)
@@ -64,7 +79,12 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
             json.dump(existing_data, lightbrarian_reading_list_file)
             lightbrarian_reading_list_file.truncate()
 
+    return books
+
 def list_books(lightbrarian_reading_list_path):
+    '''
+    List existing books in the user reading list.
+    '''
     try:
         with open(lightbrarian_reading_list_path, 'r') as lightbrarian_reading_list_file:
             reading_list_data = json.load(lightbrarian_reading_list_file)
@@ -75,7 +95,16 @@ def list_books(lightbrarian_reading_list_path):
 
     print_books(books)
 
+    return books
+
 def parse_arguments():
+    '''
+    Parse the arguments provided at the command line.
+
+    Two subcommands are supported:
+    1. lightbrarian search
+    2. lightbrarian list
+    '''
     parser = argparse.ArgumentParser(description = "A command line application to search for books and construct a reading list.")
     subparsers = parser.add_subparsers(title = "command", dest = "command")
     subparsers.required = True
@@ -97,6 +126,9 @@ def parse_arguments():
     return args
 
 def initialize(lightbrarian_root_path, lightbrarian_reading_list_path):
+    '''
+    Create the reading list file if it does not exist already.
+    '''
     if not os.path.exists(lightbrarian_root_path):
         os.makedirs(lightbrarian_root_path)
 
@@ -109,6 +141,9 @@ def initialize(lightbrarian_root_path, lightbrarian_reading_list_path):
 
 
 def cli():
+    '''
+    Main entry point into the script.
+    '''
     args = parse_arguments()
     
     command = args.command

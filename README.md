@@ -24,3 +24,5 @@ pip install virtualenv
 ```
 
 Do I need a `project.toml`?
+
+Explain how to create API token
