@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    # Install a version of Python (will vary for each job in the matrix)
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Print debug information
+      run: |
+        echo Printing the current folder
+        pwd
+        echo Listing the contents of the folder
+        ls -la
+        echo Printing the Python version
+        python --version
+    # Install pylint and pytest
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pylint pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with pylint
+      run: |
+        pylint lightbrarian
+    - name: Test with pytest
+      run: |
+        pytest -v
