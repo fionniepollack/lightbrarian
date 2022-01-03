@@ -16,19 +16,6 @@ Once you've obtained an API key, set it as an environment variable in your shell
 $ export GOOGLE_API_TOKEN=<INSERT TOKEN HERE>
 ```
 
-# Developer Installation
-```
-$ git clone https://github.com/fionniepollack/lightbrarian
-
-$ cd lightbrarian
-
-$ python3 -m venv .venv
-
-$ source .venv/bin/activate
-
-$ pip3 install --editable .
-```
-
 # Usage
 The `lightbrarian` CLI utility supports two sub-commands:
 - `lightbrarian search [-h] [--book-title BOOK_TITLE] [--book-author BOOK_AUTHOR] [--book-publisher BOOK_PUBLISHER] [--max-results MAX_RESULTS]`
@@ -134,7 +121,7 @@ $ source .venv/bin/activate
 
 $ pip3 install --editable .
 
-$ export GOOGLE_API_TOKEN=YOUR_API_TOKEN_HERE
+$ export GOOGLE_API_TOKEN=<INSERT TOKEN HERE>
 ```
 
 ## Running Tests
