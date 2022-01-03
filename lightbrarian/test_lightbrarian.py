@@ -13,7 +13,7 @@ def test_initialize(tmp_path_factory):
     return lightbrarian_reading_list_path
 
 # Invoke the search_books function and save the first search result to the reading list.
-def test_search_books(test_initialize, monkeypatch):
+def test_search_and_save_book(test_initialize, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: 1)
     
     books = search_books(
@@ -28,8 +28,7 @@ def test_search_books(test_initialize, monkeypatch):
 
     assert len(books) == 5
 
-# Call list_books to confirm only 1 book is in the reading list.
-def test_list_books(test_initialize):
-    books = list_books(test_initialize)
+    # Confirm only 1 book is in the reading list.
+    reading_list = print_reading_list(test_initialize)
 
-    assert len(books) == 1
+    assert len(reading_list) == 1

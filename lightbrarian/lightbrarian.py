@@ -9,9 +9,6 @@ from pathlib import Path
 from googleapiclient.discovery import build
 
 def print_books(books):
-    '''
-    Print a list of books.
-    '''
     for i, book in enumerate(books):
         print(f"Book ID: [{i + 1}]")
         print(f"Title: {book['volumeInfo'].get('title', 'Unknown title')}")
@@ -70,21 +67,20 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
     while not int(selected_book_id) in range(0,(total_search_results + 1)):
         selected_book_id = int(input(f"Enter Book ID (1-{total_search_results}) to save to reading list or 0 to skip: ") or 0)
 
-    # If a book is selected to be saved, then append the book to the existing reading list file.
     if selected_book_id != 0:
-        with open(lightbrarian_reading_list_path, 'r+') as lightbrarian_reading_list_file:
-            existing_data = json.load(lightbrarian_reading_list_file)
-            existing_data["books"].append(books[selected_book_id-1])
-            lightbrarian_reading_list_file.seek(0)
-            json.dump(existing_data, lightbrarian_reading_list_file)
-            lightbrarian_reading_list_file.truncate()
+        save_to_reading_list(lightbrarian_reading_list_path, books[selected_book_id-1])
 
     return books
 
-def list_books(lightbrarian_reading_list_path):
-    '''
-    List existing books in the user reading list.
-    '''
+def save_to_reading_list(lightbrarian_reading_list_path, book):
+    with open(lightbrarian_reading_list_path, 'r+') as lightbrarian_reading_list_file:
+        existing_data = json.load(lightbrarian_reading_list_file)
+        updated_reading_list = existing_data["books"].append(book)
+        lightbrarian_reading_list_file.seek(0)
+        json.dump(updated_reading_list, lightbrarian_reading_list_file)
+        lightbrarian_reading_list_file.truncate()
+
+def print_reading_list(lightbrarian_reading_list_path):
     try:
         with open(lightbrarian_reading_list_path, 'r') as lightbrarian_reading_list_file:
             reading_list_data = json.load(lightbrarian_reading_list_file)
@@ -139,7 +135,6 @@ def initialize(lightbrarian_root_path, lightbrarian_reading_list_path):
             }
             json.dump(blank_reading_list, lightbrarian_reading_list_file)
 
-
 def cli():
     '''
     Main entry point into the script.
@@ -163,7 +158,7 @@ def cli():
     if command == 'search':
         search_books(**vars(args), google_api_token=google_api_token, lightbrarian_reading_list_path=lightbrarian_reading_list_path)
     elif command == 'list':
-        list_books(lightbrarian_reading_list_path=lightbrarian_reading_list_path)
+        print_reading_list(lightbrarian_reading_list_path=lightbrarian_reading_list_path)
 
 if __name__ == "__main__":
     cli()
