@@ -117,3 +117,32 @@ Author(s): Lydia Adamson
 Publisher: Signet Book
 ---
 ```
+
+# Developer Notes
+
+## Installation
+These steps will install the `lightbrarian` package locally so any changes to the code of the original package will reflect directly in your local environment.
+
+```
+$ git clone https://github.com/fionniepollack/lightbrarian
+
+$ cd lightbrarian
+
+$ python3 -m venv .venv
+
+$ source .venv/bin/activate
+
+$ pip3 install --editable .
+
+$ export GOOGLE_API_TOKEN=YOUR_API_TOKEN_HERE
+```
+
+## Running Tests
+After installation, the tests can be run as follows:
+```
+$ pip3 install pytest
+
+$ pytest -v
+```
+
+Refer to the [documentation](https://docs.pytest.org/en/latest/contents.html) for `pytest` for more information.
