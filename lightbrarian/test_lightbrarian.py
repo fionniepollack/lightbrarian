@@ -32,3 +32,32 @@ def test_search_and_save_book(test_initialize, monkeypatch):
     reading_list = print_reading_list(test_initialize)
 
     assert len(reading_list) == 1
+
+def test_search_and_save_book_bad_user_input(test_initialize, monkeypatch):
+    responses = iter(['this should be a number', 2])
+    monkeypatch.setattr('builtins.input', lambda msg: next(responses))
+
+    books = search_books(
+        command='search',
+        book_title='The',
+        book_author=None,
+        book_publisher=None,
+        max_results=5,
+        google_api_token=google_api_token,
+        lightbrarian_reading_list_path=test_initialize
+    )
+
+    assert len(books) == 5
+
+def test_no_search_results(test_initialize):
+    books = search_books(
+        command='search',
+        book_title='adbfpoa',
+        book_author=None,
+        book_publisher=None,
+        max_results=5,
+        google_api_token=google_api_token,
+        lightbrarian_reading_list_path=test_initialize
+    )
+
+    assert len(books) == 0

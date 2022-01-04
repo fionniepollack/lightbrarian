@@ -50,7 +50,7 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
     with build('books', 'v1', developerKey=google_api_token) as service:
         response = service.volumes().list(q=query_string, maxResults=max_results).execute()
 
-    books = response['items']
+    books = response.get("items", [])
 
     total_search_results = len(books)
 
@@ -63,21 +63,27 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
     print_books(books)
 
     # Prompt user to enter a book ID to save to the reading list.
-    selected_book_id = -1
-    while not int(selected_book_id) in range(0,(total_search_results + 1)):
-        selected_book_id = int(input(f"Enter Book ID (1-{total_search_results}) to save to reading list or 0 to skip: ") or 0)
+    if total_search_results > 0:
+        selected_book_id = -1
+        while not selected_book_id in range(0,(total_search_results + 1)):
+            selected_book_id = input(f"Enter Book ID (1-{total_search_results}) to save to reading list or 0 to skip: ") or 0
+            try:
+                selected_book_id = int(selected_book_id)
+            except ValueError:
+                selected_book_id = -1
+                print(f"Invalid Book ID, please enter a number between 1 and {total_search_results}.")
 
-    if selected_book_id != 0:
-        save_to_reading_list(lightbrarian_reading_list_path, books[selected_book_id-1])
+        if selected_book_id != 0:
+            save_to_reading_list(lightbrarian_reading_list_path, books[selected_book_id-1])
 
     return books
 
 def save_to_reading_list(lightbrarian_reading_list_path, book):
     with open(lightbrarian_reading_list_path, 'r+') as lightbrarian_reading_list_file:
-        existing_data = json.load(lightbrarian_reading_list_file)
-        updated_reading_list = existing_data["books"].append(book)
+        data = json.load(lightbrarian_reading_list_file)
+        data["books"].append(book)
         lightbrarian_reading_list_file.seek(0)
-        json.dump(updated_reading_list, lightbrarian_reading_list_file)
+        json.dump(data, lightbrarian_reading_list_file)
         lightbrarian_reading_list_file.truncate()
 
 def print_reading_list(lightbrarian_reading_list_path):
