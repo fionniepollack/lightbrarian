@@ -20,6 +20,7 @@ $ export GOOGLE_API_TOKEN=<INSERT TOKEN HERE>
 The `lightbrarian` CLI utility supports two sub-commands:
 - `lightbrarian search [-h] [--book-title BOOK_TITLE] [--book-author BOOK_AUTHOR] [--book-publisher BOOK_PUBLISHER] [--max-results MAX_RESULTS]`
 - `lightbrarian list [-h]`
+- `lightbrarian delete [-h]`
 
 Run `lightbrarian --help` or `lightbrarian <subcommand> --help` for details on using each sub-command.
 
@@ -104,6 +105,9 @@ Author(s): Lydia Adamson
 Publisher: Signet Book
 ---
 ```
+
+### Delete
+The `delete` sub-command allows the user to select a book to delete from the reading list.
 
 # Developer Notes
 

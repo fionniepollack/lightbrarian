@@ -16,6 +16,23 @@ def print_books(books):
         print(f"Publisher: {book['volumeInfo'].get('publisher', 'Unknown publisher')}")
         print('---')
 
+def prompt_for_book_id(total_search_results, command):
+    if command == "search":
+        reading_list_operation = "save to"
+    elif command == "delete":
+        reading_list_operation = "delete from"
+
+    selected_book_id = -1
+    while not selected_book_id in range(0,(total_search_results + 1)):
+        selected_book_id = input(f"Enter Book ID (1-{total_search_results}) to {reading_list_operation} reading list or 0 to skip: ") or 0
+        try:
+            selected_book_id = int(selected_book_id)
+        except ValueError:
+            selected_book_id = -1
+            print(f"Invalid Book ID, please enter a number between 1 and {total_search_results}.")
+
+    return selected_book_id
+
 def search_books(command, book_title, book_author, book_publisher, max_results, google_api_token, lightbrarian_reading_list_path):
     '''
     Use the Google Books API to search for books (aka volumes).
@@ -64,14 +81,7 @@ def search_books(command, book_title, book_author, book_publisher, max_results, 
 
     # Prompt user to enter a book ID to save to the reading list.
     if total_search_results > 0:
-        selected_book_id = -1
-        while not selected_book_id in range(0,(total_search_results + 1)):
-            selected_book_id = input(f"Enter Book ID (1-{total_search_results}) to save to reading list or 0 to skip: ") or 0
-            try:
-                selected_book_id = int(selected_book_id)
-            except ValueError:
-                selected_book_id = -1
-                print(f"Invalid Book ID, please enter a number between 1 and {total_search_results}.")
+        selected_book_id = prompt_for_book_id(total_search_results, command)
 
         if selected_book_id != 0:
             save_to_reading_list(lightbrarian_reading_list_path, books[selected_book_id-1])
@@ -86,6 +96,15 @@ def save_to_reading_list(lightbrarian_reading_list_path, book):
         json.dump(data, lightbrarian_reading_list_file)
         lightbrarian_reading_list_file.truncate()
 
+def delete_from_reading_list(lightbrarian_reading_list_path, book_index):
+    with open(lightbrarian_reading_list_path, 'r+') as lightbrarian_reading_list_file:
+        data = json.load(lightbrarian_reading_list_file)
+        deleted_book = data["books"].pop(book_index)
+        lightbrarian_reading_list_file.seek(0)
+        json.dump(data, lightbrarian_reading_list_file)
+        lightbrarian_reading_list_file.truncate()
+    return deleted_book
+
 def print_reading_list(lightbrarian_reading_list_path):
     try:
         with open(lightbrarian_reading_list_path, 'r') as lightbrarian_reading_list_file:
@@ -99,6 +118,20 @@ def print_reading_list(lightbrarian_reading_list_path):
 
     return books
 
+def delete_book_from_reading_list(command, lightbrarian_reading_list_path):
+    books = print_reading_list(lightbrarian_reading_list_path)
+    books_length = len(books)
+    selected_book_id = 0
+    if books_length > 0:
+        selected_book_id = prompt_for_book_id(books_length, command)
+    print(f"selected_book_id is {selected_book_id}")
+
+    if selected_book_id != 0:
+        deleted_book = delete_from_reading_list(lightbrarian_reading_list_path, selected_book_id-1)
+
+    return deleted_book
+
+
 def parse_arguments():
     '''
     Parse the arguments provided at the command line.
@@ -106,6 +139,7 @@ def parse_arguments():
     Two subcommands are supported:
     1. lightbrarian search
     2. lightbrarian list
+    3. lightbrarian delete
     '''
     parser = argparse.ArgumentParser(description = "A command line application to search for books and construct a reading list.")
     subparsers = parser.add_subparsers(title = "command", dest = "command")
@@ -118,6 +152,8 @@ def parse_arguments():
     parser_search.add_argument("--max-results", type = int, default = 5, help = "The maximum number of search results to return")
 
     parser_list = subparsers.add_parser("list", help = "List books from reading list")
+
+    parser_delete = subparsers.add_parser("delete", help = "Delete selected book from reading list")
 
     args = parser.parse_args()
 
@@ -165,6 +201,8 @@ def cli():
         search_books(**vars(args), google_api_token=google_api_token, lightbrarian_reading_list_path=lightbrarian_reading_list_path)
     elif command == 'list':
         print_reading_list(lightbrarian_reading_list_path=lightbrarian_reading_list_path)
+    elif command == 'delete':
+        delete_book_from_reading_list(command, lightbrarian_reading_list_path=lightbrarian_reading_list_path)
 
 if __name__ == "__main__":
     cli()

@@ -49,6 +49,16 @@ def test_search_and_save_book_bad_user_input(test_initialize, monkeypatch):
 
     assert len(books) == 5
 
+def test_delete_book_from_reading_list(test_initialize, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda _: 1)
+
+    deleted_book = delete_book_from_reading_list(
+        command='delete',
+        lightbrarian_reading_list_path=test_initialize
+    )
+
+    assert isinstance(deleted_book['volumeInfo']['title'], str)
+
 def test_no_search_results(test_initialize):
     books = search_books(
         command='search',
