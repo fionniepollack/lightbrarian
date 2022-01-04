@@ -1,4 +1,7 @@
 # lightbrarian
+
+[![CI](https://github.com/fionniepollack/lightbrarian/actions/workflows/ci.yml/badge.svg)](https://github.com/fionniepollack/lightbrarian/actions/workflows/ci.yml)
+
 A command line application that allows you to use the Google Books API to search for books and construct a reading list.
 
 # Installation
